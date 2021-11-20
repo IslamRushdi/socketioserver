@@ -15,11 +15,16 @@ global counter
 global ICE
 
 
+@app.route('/test')
+def register():
+    return "working!"
+
+
 @socketio.on('connect')
 def test_connect(auth):
     print('Client connected')
     print(auth.id)
-    # socketio.emit('my response', {'data': 'Connected'})
+
 
 
 @socketio.on('disconnect')
@@ -70,6 +75,6 @@ def handle_event(data):
 
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app,host='0.0.0.0',debug=True)
 
 
