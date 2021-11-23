@@ -1,16 +1,25 @@
-from flask import Flask, render_template
+from socket import socket
+
+from flask import Flask, render_template, redirect, request, session
+
+
+from flask.globals import request
 from flask_socketio import SocketIO
+from flask_socketio import join_room, leave_room
 
 from flask import g
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
+socketio.init_app(app, cors_allowed_origins="*")
 
 
 global my_IDlist
-global VolID
+VolID =[];
 global Vol
+blind =[];
+blindSdp =[];
 global counter
 global ICE
 
@@ -21,9 +30,10 @@ def register():
 
 
 @socketio.on('connect')
-def test_connect(auth):
+def test_connect():
     print('Client connected')
-    print(auth.id)
+    
+
 
 
 
@@ -47,9 +57,18 @@ def handle_message(data):
     data = data.split()
     sdpBlind = data[0]
     sdpVol = Vol.pop()
-    socketio.emit('','getting Second side SDP of Blind',sdpBlind,'')
     socketio.emit('','getting Second side SDP of volunteer',sdpVol,'')
+    room = session.get('room')
+    join_room(room)
+    socketio.emit('', 'getting Second side SDP of Blind', data, '',room=VolID[0])
+    # request.sid
 
+
+# def send_message(data):
+#     username = data['username']
+#     room = data['room']
+#     join_room(room)
+#     socketio.emit('', 'getting Second side SDP of Blind', data, '')
 
 
 @socketio.on('get ICE')
@@ -64,6 +83,8 @@ def handle_event(data):
     print('received message: ' + data)
     data = data.split()
     Vol.append(data[0])
+    VolID.append(request.sid)
+
 
 
 # getting Second side SDP of Blind
@@ -75,6 +96,6 @@ def handle_event(data):
 
 
 if __name__ == '__main__':
-    socketio.run(app,host='0.0.0.0',debug=True)
+    socketio.run(app,host='0.0.0.0',debug=True,port=5000)
 
 
