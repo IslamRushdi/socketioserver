@@ -20,8 +20,6 @@ volunteers_id =[]
 volunteers_sdp=dict()
 blind =[]
 blind_await_ICE=dict()
-# counter=None
-# ICE=None
 room ='volunteers'
 
 
@@ -56,11 +54,11 @@ def handle_volunteer_connected():
 def handle_creating_offer(blind_sdp):
     #blind sdp: string
     print('blind sdp recieved in server')
-    # print(blind_sdp)
+   
     if len(volunteers_id) == 0:
         return socketio.emit('server: no volunteer found')
     
-    # blind_candidate = blind_connection['candidate']
+    
 
     blind_data ={
         "sdp":blind_sdp,
@@ -70,8 +68,7 @@ def handle_creating_offer(blind_sdp):
     blind.append(blind_data)
     print(blind_data)
     socketio.emit('server: send blind connection to all volunteers to create offer',blind_data, room = room)
-    # socketio.emit('server: send blind connection to all volunteers to create offer',blind_data, broadcast=True)
-    # socketio.send('server: send blind connection to all volunteers to create offer',blind_data, to=room)
+    
 
 
 @socketio.on('volunteer: send sdp, candidate and blind id')
@@ -91,7 +88,7 @@ def handle_receiving_volunteer_candidate(volunteer_invitation):
     blindId = volunteer_invitation['blindId']
     socketio.emit('server: send volunteer candidate and sdp',volunteer_info, room= blindId )
     
-    # send('server: send volunteer candidate and sdp',volunteer_info  ,to=volunteer_invitation["blindId"])
+   
    
 
 
